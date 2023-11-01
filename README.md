@@ -1,6 +1,4 @@
-[NeurIPS 2023] Official Implementation of "PaintSeg: Painting Pixels for Training-free Segmentation"
-
-We build a Segment Anything Model (SAM) with Stable Diffusion Inpainting without any training!
+<font color="red">We build a Segment Anything Model (SAM) with Stable Diffusion Inpainting without any training!</font>
 
 # Abstract
 <!-- ![avatar](illustration.jpg) -->
@@ -12,8 +10,9 @@ The paper introduces PaintSeg, a new unsupervised method for segmenting objects 
 > Xiang Li, Chung-Ching Lin, Yinpeng Chen, Zicheng Liu, Jinglu Wang, Bhiksha Raj
 
 # Updates
-- **(2023-09)** PaintSeg is accepted to NeurIPS 2023!
 - **(2023-11)** Demo released!
+- **(2023-09)** PaintSeg is accepted to NeurIPS 2023!
+
 
 ## Environment setup
 ```
