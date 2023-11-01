@@ -1,3 +1,20 @@
+[NeurIPS 2023] Official Implementation of "PaintSeg: Painting Pixels for Training-free Segmentation"
+
+We build a Segment Anything Model (SAM) with Stable Diffusion Inpainting without any training!
+
+# Abstract
+<!-- ![avatar](illustration.jpg) -->
+The paper introduces PaintSeg, a new unsupervised method for segmenting objects without any training. We propose an adversarial masked contrastive painting (AMCP) process, which creates a contrast between the original image and a painted image in which a masked area is painted using off-the-shelf generative models. During the painting process, inpainting and outpainting are alternated, with the former masking the foreground and filling in the background, and the latter masking the background while recovering the missing part of the foreground object. Inpainting and outpainting, also referred to as I-step and O-step, allow our method to gradually advance the target segmentation mask toward the ground truth without supervision or training. PaintSeg can be configured to work with a variety of prompts, e.g. coarse masks, boxes, scribbles, and points. Our experimental results demonstrate that PaintSeg outperforms existing approaches in coarse mask-prompt, box-prompt, and point-prompt segmentation tasks, providing a training-free solution suitable for unsupervised segmentation.
+<p align="center"><img src="images/paintseg.png" width="700"/></p>
+
+> [**PaintSeg: Training-free Segmentation via Painting**](https://arxiv.org/abs/2305.19406)
+>
+> Xiang Li, Chung-Ching Lin, Yinpeng Chen, Zicheng Liu, Jinglu Wang, Bhiksha Raj
+
+# Updates
+- **(2023-09)** PaintSeg is accepted to NeurIPS 2023!
+- **(2023-11)** Demo released!
+
 ## Environment setup
 ```
 conda env create -f environment.yaml
