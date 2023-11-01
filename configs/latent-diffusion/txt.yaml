@@ -1,0 +1,126 @@
+model:
+  base_learning_rate: 5.0e-05
+  target: ldm.models.diffusion.ddpm.LatentDiffusion
+  params:
+    linear_start: 0.00085
+    linear_end: 0.012
+    num_timesteps_cond: 1
+    log_every_t: 200
+    timesteps: 1000
+    first_stage_key: image
+    cond_stage_key: caption
+    image_size: 16
+    channels: 3
+    cond_stage_trainable: true
+    conditioning_key: crossattn
+    monitor: val/loss_simple_ema
+    scale_factor: 0.18215
+    use_ema: False
+    scheduler_config: # 10000 warmup steps
+      target: ldm.lr_scheduler.LambdaLinearScheduler
+      params:
+        warm_up_steps: [10000]
+        cycle_lengths: [10000000000000]
+        f_start: [1.e-6]
+        f_max: [1.]
+        f_min: [ 1.]
+
+    unet_config:
+      target: ldm.modules.diffusionmodules.openaimodel.UNetModel
+      params:
+        image_size: 16
+        in_channels: 4
+        out_channels: 4
+        model_channels: 320
+        attention_resolutions:
+        - 4
+        - 2
+        - 1
+        num_res_blocks: 2
+        channel_mult:
+        - 1
+        - 2
+        - 4
+        - 4
+        num_heads: 8
+        use_spatial_transformer: true
+        transformer_depth: 1
+        context_dim: 512
+        use_checkpoint: true
+        legacy: False
+
+    first_stage_config:
+      target: ldm.models.autoencoder.AutoencoderKL
+      params:
+        embed_dim: 4
+        monitor: "val/rec_loss"
+        ckpt_path: "logs/2022-09-20T16-05-53_autoencoder_kl_32x32x4_vox/checkpoints/epoch=000052.ckpt"
+        ddconfig:
+          double_z: True
+          z_channels: 4
+          resolution: 256
+          in_channels: 3
+          out_ch: 3
+          ch: 128
+          ch_mult: [ 1,2,4,4 ]  # num_down = len(ch_mult)-1
+          num_res_blocks: 2
+          attn_resolutions: [ ]
+          dropout: 0.0
+        lossconfig:
+          target: torch.nn.Identity
+
+#    cond_stage_config:
+#      target: ldm.modules.encoders.modules.BERTEmbedder
+#      params:
+#        n_embed: 512
+#        n_layer: 32
+    cond_stage_config:
+      target: ldm.modules.encoders.aud_enc.backbones.ThinResNet34
+      params:
+        pretrained: $FOLDER$/pretrained_models/baseline_lite_ap.model
+        output_channel: 512
+data:
+  target: main.DataModuleFromConfig
+  params:
+    batch_size: 1
+    num_workers: 2
+    wrap: False
+    train:
+      target: ldm.data.vox.MMDataset #ldm.data.Txt.Txttrain
+      params:
+        size:
+          - 256
+          - 256
+        split: train
+#        degradation: pil_nearest
+    validation:
+      target: ldm.data.vox.MMDataset
+      params:
+        size:
+          - 256
+          - 256
+        split: val
+        eval_triplet_test_all: # match_test
+          - match_g_v2f_2_test
+          - match_g_f2v_2_test
+          - match_v2f_2_test
+          - match_f2v_2_test
+          - verify_g_v2f_test
+          - verify_g_f2v_test
+          - verify_v2f_test
+          - verify_f2v_test
+          - reterival_v2f_test
+          - reterival_f2v_test
+#        degradation: pil_nearest
+
+lightning:
+  callbacks:
+    image_logger:
+      target: main.ImageLogger
+      params:
+        batch_frequency: 5000
+        max_images: 8
+        increase_log_steps: False
+
+  trainer:
+    benchmark: True
